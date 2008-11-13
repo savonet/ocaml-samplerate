@@ -17,6 +17,7 @@ external create : converter -> int -> t = "ocaml_samplerate_new"
 
 external process : t -> float -> float array -> int -> int -> float array -> int -> int -> int * int = "ocaml_samplerate_process_byte" "ocaml_samplerate_process"
 
+external process_alloc : t -> float -> float array -> int -> int -> float array = "ocaml_samplerate_process_alloc"
+
 external reset : t -> unit = "ocaml_samplerate_reset"
 
-external set_ratio : t -> float -> unit = "ocaml_samplerate_set_ratio"

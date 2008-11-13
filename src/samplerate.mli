@@ -27,6 +27,6 @@ val create : converter -> int -> t
 
 val process : t -> float -> float array -> int -> int -> float array -> int -> int -> int * int
 
-val reset : t -> unit
+val process_alloc : t -> float -> float array -> int -> int -> float array
 
-val set_ratio : t -> float -> unit
+val reset : t -> unit
