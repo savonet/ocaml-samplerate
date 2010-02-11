@@ -162,9 +162,16 @@ CAMLprim value ocaml_samplerate_process_alloc(value src, value _ratio, value _in
   int i;
 
   inbuf = malloc(inbuflen * sizeof(float));
+  if (inbuf == NULL)
+    caml_failwith("malloc");
   for (i = 0; i < inbuflen; i++)
     inbuf[i] = Double_field(_inbuf, inbufofs + i);
   outbuf = malloc(outbuflen * sizeof(float));
+  if (outbuf == NULL)
+  {
+    free(inbuf); 
+    caml_failwith("malloc");
+  }
   data.data_in = inbuf;
   data.input_frames = inbuflen;
   data.data_out = outbuf;
@@ -176,9 +183,14 @@ CAMLprim value ocaml_samplerate_process_alloc(value src, value _ratio, value _in
     data.end_of_input = 0;
 
   caml_enter_blocking_section();
-  assert(!src_process(state, &data));
+  int ret = src_process(state, &data);
   caml_leave_blocking_section();
   free(inbuf);
+  if (ret != 0)
+  {
+    free(outbuf);
+    caml_failwith(src_strerror(ret));
+  }
 
   anslen = data.output_frames_gen;
   ans = caml_alloc(anslen * Double_wosize, Double_array_tag);
