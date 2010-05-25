@@ -163,14 +163,14 @@ CAMLprim value ocaml_samplerate_process_alloc(value src, value _ratio, value _in
 
   inbuf = malloc(inbuflen * sizeof(float));
   if (inbuf == NULL)
-    caml_failwith("malloc");
+    caml_raise_out_of_memory();
   for (i = 0; i < inbuflen; i++)
     inbuf[i] = Double_field(_inbuf, inbufofs + i);
   outbuf = malloc(outbuflen * sizeof(float));
   if (outbuf == NULL)
   {
     free(inbuf); 
-    caml_failwith("malloc");
+    caml_raise_out_of_memory();
   }
   data.data_in = inbuf;
   data.input_frames = inbuflen;
