@@ -19,18 +19,7 @@ AC_PROG_CC()
 AC_CHECK_TOOL([AR],[ar],no)
 AC_SUBST(AR)
 PKG_PROG_PKG_CONFIG()
-#PKG_CHECK_MODULES(libsamplerate, samplerate, , [AC_MSG_ERROR(libsamplerate not found.)])
-
-# PKG_CHECK_MODULES loses when you need --libs-only-[lL]
-if ! $PKG_CONFIG --exists samplerate; then
-        AC_MSG_ERROR([libsamplerate not found])
-fi
-libsamplerate_CFLAGS=`$PKG_CONFIG --cflags samplerate`
-AC_SUBST([libsamplerate_CFLAGS])
-libsamplerate_LIBS=`$PKG_CONFIG --libs-only-l samplerate`
-AC_SUBST([libsamplerate_LIBS])
-libsamplerate_LDFLAGS=`$PKG_CONFIG --libs-only-L samplerate`
-AC_SUBST([libsamplerate_LDFLAGS])
+PKG_CONFIG_CHECK_MODULE([samplerate])
 
 # substitutions to perform
 AC_SUBST(VERSION)
