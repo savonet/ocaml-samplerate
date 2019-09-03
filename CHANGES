@@ -1,3 +1,7 @@
+0.1.5 (unreleased)
+=====
+* Add `process_ba`.
+
 0.1.4 (15-10-2016)
 =====
 * Lift configure failure when compiling as root.

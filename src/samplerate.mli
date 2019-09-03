@@ -27,6 +27,8 @@ val create : converter -> int -> t
 
 val process : t -> float -> float array -> int -> int -> float array -> int -> int -> int * int
 
+val process_ba : t -> float -> (float, Bigarray.float32_elt, Bigarray.c_layout) Bigarray.Array1.t -> (float, Bigarray.float32_elt, Bigarray.c_layout) Bigarray.Array1.t -> int * int
+
 val process_alloc : t -> float -> float array -> int -> int -> float array
 
 val reset : t -> unit

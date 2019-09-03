@@ -10,9 +10,10 @@ install-sh
 src/META
 src/Makefile
 src/._bcdi/
-src/._d/
+._d
 src/._ncdi/
-src/*.a
-src/*.cm*
-src/*.o
-src/*.so
+*.a
+*.cm*
+*.o
+*.so
+*~

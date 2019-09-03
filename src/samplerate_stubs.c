@@ -1,10 +1,12 @@
 #include <caml/alloc.h>
+#include <caml/bigarray.h>
 #include <caml/callback.h>
 #include <caml/custom.h>
 #include <caml/fail.h>
 #include <caml/memory.h>
 #include <caml/mlvalues.h>
 #include <caml/signals.h>
+#include <caml/threads.h>
 
 #include <samplerate.h>
 
@@ -91,6 +93,7 @@ static struct custom_operations state_ops =
 
 CAMLprim value ocaml_samplerate_new(value converter, value channels)
 {
+  CAMLparam2(converter, channels);
   int err;
   SRC_STATE *state = src_new(Int_val(converter), Int_val(channels), &err);
   value ans;
@@ -99,7 +102,7 @@ CAMLprim value ocaml_samplerate_new(value converter, value channels)
   assert(state); /* TODO: raise depending on err */
   State_val(ans) = state;
 
-  return ans;
+  CAMLreturn(ans);
 }
 
 CAMLprim value ocaml_samplerate_process(value src, value _ratio, value _inbuf, value _inbufofs, value _inbuflen, value _outbuf, value _outbufofs, value _outbuflen)
@@ -145,6 +148,43 @@ CAMLprim value ocaml_samplerate_process(value src, value _ratio, value _inbuf, v
 CAMLprim value ocaml_samplerate_process_byte(value *argv, int argc)
 {
   return ocaml_samplerate_process(argv[0], argv[1], argv[2], argv[3], argv[4], argv[5], argv[6], argv[7]);
+}
+
+CAMLprim value ocaml_samplerate_process_ba(value src, value _ratio, value _inbuf, value _outbuf)
+{
+  CAMLparam4(src, _ratio, _inbuf, _outbuf);
+  CAMLlocal1(ans);
+
+  SRC_STATE *state = State_val(src);
+  float ratio = Double_val(_ratio);
+  struct caml_ba_array *inba = Caml_ba_array_val(_inbuf);
+  struct caml_ba_array *outba = Caml_ba_array_val(_outbuf);
+  SRC_DATA data;
+
+  caml_release_runtime_system();
+
+  data.data_in = inba->data;
+  data.input_frames = inba->dim[0];
+  data.data_out = outba->data;
+  data.output_frames = outba->dim[0];
+  data.src_ratio = ratio;
+  if (data.input_frames == 0)
+    data.end_of_input = 1;
+  else
+    data.end_of_input = 0;
+
+  int ret = src_process(state, &data);
+
+  caml_acquire_runtime_system();
+
+  if (ret != 0)
+    caml_failwith(src_strerror(ret));
+
+  ans = caml_alloc_tuple(2);
+  Store_field(ans, 0, Val_int(data.input_frames_used));
+  Store_field(ans, 1, Val_int(data.output_frames_gen));
+
+  CAMLreturn(ans);
 }
 
 CAMLprim value ocaml_samplerate_process_alloc(value src, value _ratio, value _inbuf, value _inbufofs, value _inbuflen)
