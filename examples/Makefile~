@@ -1,6 +1,0 @@
-SOURCES = test.ml
-RESULT = test
-
-all: dnc
-
-include OCamlMakefile
