@@ -1,25 +1,26 @@
 ocaml-samplerate
 
-
-This package contains an O'Caml interface for 
-audio rate conversion library, 
-otherwise known as libsamplerate.
+This package contains an OCaml interface for the samplerate library.
 
 Please read the COPYING file before using this software.
 
 Prerequisites:
 ==============
 
-- ocaml >= 3.0.6 (haven't tried earlier versions)
+- ocaml
 
-- libsamplerate >= 0.1.2 (haven't tried earlier versions)
+- samplerate
 
-- findlib >= 0.8.1 (haven't tried earlier versions)
+- findlib
+
+- dune >= 2.0
 
 Compilation:
 ============
 
-	$ make all
+```
+$ dune build
+```
 
 This should build both the native and the byte-code version of the
 extension library.
@@ -27,10 +28,16 @@ extension library.
 Installation:
 =============
 
-	$ make install
+Via `opam`:
 
-This should install the library file (using ocamlfind) in the
-appropriate place.
+```
+$ opam install samplerate
+```
+
+Via `dune` (for developers):
+```
+$ dune install
+```
 
 Author:
 =======

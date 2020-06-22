@@ -15,31 +15,29 @@
 
 #define Int_conv(c) Int_val(c)
 
-CAMLprim value ocaml_samplerate_get_conv_name(value conv)
-{
+CAMLprim value ocaml_samplerate_get_conv_name(value conv) {
   return caml_copy_string(src_get_name(Int_conv(conv)));
 }
 
-CAMLprim value ocaml_samplerate_get_conv_descr(value conv)
-{
+CAMLprim value ocaml_samplerate_get_conv_descr(value conv) {
   return caml_copy_string(src_get_description(Int_conv(conv)));
 }
 
-CAMLprim value ocaml_samplerate_convert(value vconv, value vchans, value vratio, value vinbuf, value inofs, value len)
-{
+CAMLprim value ocaml_samplerate_convert(value vconv, value vchans, value vratio,
+                                        value vinbuf, value inofs, value len) {
   CAMLparam2(vratio, vinbuf);
   int chans = Int_val(vchans);
   float ratio = Double_val(vratio);
   int inbuflen = Int_val(len);
-  float *inbuf = (float*)malloc(sizeof(float) * inbuflen);
+  float *inbuf = (float *)malloc(sizeof(float) * inbuflen);
   int outbuflen = (int)(inbuflen * ratio) + 64;
-  float *outbuf = (float*)malloc(sizeof(float) * outbuflen);
+  float *outbuf = (float *)malloc(sizeof(float) * outbuflen);
   SRC_DATA src_data;
   int i, ret;
   value ans;
   int anslen;
 
-  for (i=0; i<inbuflen; i++)
+  for (i = 0; i < inbuflen; i++)
     inbuf[i] = Double_field(vinbuf, i + Int_val(inofs));
 
   src_data.data_in = inbuf;
@@ -53,8 +51,7 @@ CAMLprim value ocaml_samplerate_convert(value vconv, value vchans, value vratio,
   caml_leave_blocking_section();
 
   free(inbuf);
-  if (ret != 0)
-  {
+  if (ret != 0) {
     fprintf(stderr, "ocaml-samplerate (%d): %s\n", ret, src_strerror(ret));
     assert(ret == 0);
   }
@@ -62,51 +59,44 @@ CAMLprim value ocaml_samplerate_convert(value vconv, value vchans, value vratio,
   anslen = src_data.output_frames_gen * chans;
   ans = caml_alloc(anslen * Double_wosize, Double_array_tag);
 
-  for (i=0; i<anslen; i++)
+  for (i = 0; i < anslen; i++)
     Store_double_field(ans, i, outbuf[i]);
   free(outbuf);
 
   CAMLreturn(ans);
 }
 
-CAMLprim value ocaml_samplerate_convert_byte(value *argv, int argc)
-{
-  return ocaml_samplerate_convert(argv[0], argv[1], argv[2], argv[3], argv[4], argv[5]);
+CAMLprim value ocaml_samplerate_convert_byte(value *argv, int argc) {
+  return ocaml_samplerate_convert(argv[0], argv[1], argv[2], argv[3], argv[4],
+                                  argv[5]);
 }
 
-#define State_val(v) (*((SRC_STATE**)Data_custom_val(v)))
+#define State_val(v) (*((SRC_STATE **)Data_custom_val(v)))
 
-static void finalize_src(value s)
-{
-  src_delete(State_val(s));
-}
+static void finalize_src(value s) { src_delete(State_val(s)); }
 
-static struct custom_operations state_ops =
-{
-  "ocaml_samplerate_state",
-  finalize_src,
-  custom_compare_default,
-  custom_hash_default,
-  custom_serialize_default,
-  custom_deserialize_default
-};
+static struct custom_operations state_ops = {
+    "ocaml_samplerate_state", finalize_src,
+    custom_compare_default,   custom_hash_default,
+    custom_serialize_default, custom_deserialize_default};
 
-CAMLprim value ocaml_samplerate_new(value converter, value channels)
-{
+CAMLprim value ocaml_samplerate_new(value converter, value channels) {
   CAMLparam2(converter, channels);
   int err;
   SRC_STATE *state = src_new(Int_val(converter), Int_val(channels), &err);
   value ans;
 
-  ans = caml_alloc_custom(&state_ops, sizeof(SRC_STATE*), 1, 0);
+  ans = caml_alloc_custom(&state_ops, sizeof(SRC_STATE *), 1, 0);
   assert(state); /* TODO: raise depending on err */
   State_val(ans) = state;
 
   CAMLreturn(ans);
 }
 
-CAMLprim value ocaml_samplerate_process(value src, value _ratio, value _inbuf, value _inbufofs, value _inbuflen, value _outbuf, value _outbufofs, value _outbuflen)
-{
+CAMLprim value ocaml_samplerate_process(value src, value _ratio, value _inbuf,
+                                        value _inbufofs, value _inbuflen,
+                                        value _outbuf, value _outbufofs,
+                                        value _outbuflen) {
   CAMLparam4(src, _ratio, _inbuf, _outbuf);
   CAMLlocal1(ans);
   int inbufofs = Int_val(_inbufofs);
@@ -145,13 +135,13 @@ CAMLprim value ocaml_samplerate_process(value src, value _ratio, value _inbuf, v
   CAMLreturn(ans);
 }
 
-CAMLprim value ocaml_samplerate_process_byte(value *argv, int argc)
-{
-  return ocaml_samplerate_process(argv[0], argv[1], argv[2], argv[3], argv[4], argv[5], argv[6], argv[7]);
+CAMLprim value ocaml_samplerate_process_byte(value *argv, int argc) {
+  return ocaml_samplerate_process(argv[0], argv[1], argv[2], argv[3], argv[4],
+                                  argv[5], argv[6], argv[7]);
 }
 
-CAMLprim value ocaml_samplerate_process_ba(value src, value _ratio, value _inbuf, value _outbuf)
-{
+CAMLprim value ocaml_samplerate_process_ba(value src, value _ratio,
+                                           value _inbuf, value _outbuf) {
   CAMLparam4(src, _ratio, _inbuf, _outbuf);
   CAMLlocal1(ans);
 
@@ -187,8 +177,9 @@ CAMLprim value ocaml_samplerate_process_ba(value src, value _ratio, value _inbuf
   CAMLreturn(ans);
 }
 
-CAMLprim value ocaml_samplerate_process_alloc(value src, value _ratio, value _inbuf, value _inbufofs, value _inbuflen)
-{
+CAMLprim value ocaml_samplerate_process_alloc(value src, value _ratio,
+                                              value _inbuf, value _inbufofs,
+                                              value _inbuflen) {
   CAMLparam3(src, _ratio, _inbuf);
   CAMLlocal1(ans);
   int inbufofs = Int_val(_inbufofs);
@@ -207,9 +198,8 @@ CAMLprim value ocaml_samplerate_process_alloc(value src, value _ratio, value _in
   for (i = 0; i < inbuflen; i++)
     inbuf[i] = Double_field(_inbuf, inbufofs + i);
   outbuf = malloc(outbuflen * sizeof(float));
-  if (outbuf == NULL)
-  {
-    free(inbuf); 
+  if (outbuf == NULL) {
+    free(inbuf);
     caml_raise_out_of_memory();
   }
   data.data_in = inbuf;
@@ -226,8 +216,7 @@ CAMLprim value ocaml_samplerate_process_alloc(value src, value _ratio, value _in
   int ret = src_process(state, &data);
   caml_leave_blocking_section();
   free(inbuf);
-  if (ret != 0)
-  {
+  if (ret != 0) {
     free(outbuf);
     caml_failwith(src_strerror(ret));
   }
@@ -235,18 +224,15 @@ CAMLprim value ocaml_samplerate_process_alloc(value src, value _ratio, value _in
   anslen = data.output_frames_gen;
   ans = caml_alloc(anslen * Double_wosize, Double_array_tag);
 
-  for (i=0; i<anslen; i++)
+  for (i = 0; i < anslen; i++)
     Store_double_field(ans, i, outbuf[i]);
   free(outbuf);
 
   CAMLreturn(ans);
 }
 
-CAMLprim value ocaml_samplerate_reset(value src)
-{
+CAMLprim value ocaml_samplerate_reset(value src) {
   src_reset(State_val(src));
 
   return Val_unit;
 }
-
-

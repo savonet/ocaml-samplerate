@@ -1,6 +1,0 @@
-name="samplerate"
-version="@VERSION@"
-description="OCaml bindings for libsamplerate"
-requires=""
-archive(byte)="samplerate.cma"
-archive(native)="samplerate.cmxa"
