@@ -1,4 +1,4 @@
-0.1.5 (unreleased)
+0.1.5 (14-11-2020)
 =====
 * Switched to dune
 * Add `process_ba`.
