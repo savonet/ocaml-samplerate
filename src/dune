@@ -2,6 +2,7 @@
  (name samplerate)
  (public_name samplerate)
  (synopsis "OCaml bindings for samplerate")
+ (libraries bigarray)
  (foreign_stubs
   (language c)
   (names samplerate_stubs)
