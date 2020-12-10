@@ -13,6 +13,6 @@
  (synopsis "Samplerate audio conversion library")
  (description "Bindings for the samplerate library which provides functions for changing samplerate of audio data")
  (depends
-  (dune (> 2.0))
+  (dune (>= 2.0))
   dune-configurator)
 )
