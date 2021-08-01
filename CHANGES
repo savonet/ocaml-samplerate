@@ -1,3 +1,8 @@
+0.1.6 (unreleased)
+=====
+
+- Change licence to 2-clause BSD in order to match libsamplerate's licence (#1).
+
 0.1.5 (14-11-2020)
 =====
 * Switched to dune

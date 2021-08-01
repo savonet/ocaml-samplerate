@@ -2,7 +2,7 @@
 (version 0.1.5)
 (name samplerate)
 (source (github savonet/ocaml-samplerate))
-(license LGPL-2.1)
+(license BSD-2-Clause)
 (authors "The Savonet Team <savonet-users@lists.sourceforge.net>")
 (maintainers "The Savonet Team <savonet-users@lists.sourceforge.net>")
 
