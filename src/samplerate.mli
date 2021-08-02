@@ -1,8 +1,10 @@
 (**
-  * Bindings for libsamplerate library, which is dedicated to changing the sampling rate of audio data.
-  *
-  * @author Samuel Mimram
-  *)
+
+   Bindings for libsamplerate library, which is dedicated to changing the
+   sampling rate of audio data. All offsets and sizes are given in number of
+   samples {i per channel}.
+
+   @author Samuel Mimram *)
 
 (** Kind of converter. *)
 type converter =
@@ -38,7 +40,7 @@ val get_conv_descr : converter -> string
 (** [convert converter channels ratio inbuf offset length] converts audio data
     with given number of channels with the given ratio (output samplerate / input
     samplerate) reading from given buffer starting at given offset, the given
-    number of audio samples (for each channel). *)
+    number of audio samples (per channel). *)
 val convert :
   converter -> int -> float -> float array -> int -> int -> float array
 
@@ -51,7 +53,7 @@ type t
 val create : converter -> int -> t
 
 (** Convert audio data with given state, at given ratio, reading from given
-    buffer at given offset the given number of channels, writing in output buffer
+    buffer at given offset the given number of samples, writing in output buffer
     starting at offset the given number of samples. Returns the number of samples
     (per channel) used from input buffer and produced in output buffer. *)
 val process :
