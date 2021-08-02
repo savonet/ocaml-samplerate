@@ -167,18 +167,19 @@ CAMLprim value ocaml_samplerate_process_ba(value src, value _ratio,
   CAMLparam4(src, _ratio, _inbuf, _outbuf);
   CAMLlocal1(ans);
 
+  SRC_DATA data;
   SRC_STATE *state = State_val(src);
+  int channels = src_get_channels(state);
   float ratio = Double_val(_ratio);
   struct caml_ba_array *inba = Caml_ba_array_val(_inbuf);
   struct caml_ba_array *outba = Caml_ba_array_val(_outbuf);
-  SRC_DATA data;
 
   caml_release_runtime_system();
 
   data.data_in = inba->data;
-  data.input_frames = inba->dim[0];
+  data.input_frames = inba->dim[0] / channels;
   data.data_out = outba->data;
-  data.output_frames = outba->dim[0];
+  data.output_frames = outba->dim[0] / channels;
   data.src_ratio = ratio;
   if (data.input_frames == 0)
     data.end_of_input = 1;
@@ -235,9 +236,9 @@ CAMLprim value ocaml_samplerate_process_alloc(value src, value _ratio,
   else
     data.end_of_input = 0;
 
-  caml_enter_blocking_section();
+  caml_release_runtime_system();
   int ret = src_process(state, &data);
-  caml_leave_blocking_section();
+  caml_acquire_runtime_system();
   free(inbuf);
   if (ret != 0) {
     free(outbuf);
