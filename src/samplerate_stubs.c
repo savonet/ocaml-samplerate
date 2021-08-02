@@ -99,35 +99,42 @@ CAMLprim value ocaml_samplerate_process(value src, value _ratio, value _inbuf,
                                         value _outbuflen) {
   CAMLparam4(src, _ratio, _inbuf, _outbuf);
   CAMLlocal1(ans);
-  int inbufofs = Int_val(_inbufofs);
-  int inbuflen = Int_val(_inbuflen);
-  int outbufofs = Int_val(_outbufofs);
-  int outbuflen = Int_val(_outbuflen);
-  float *inbuf, *outbuf;
   SRC_DATA data;
   SRC_STATE *state = State_val(src);
+  int channels = src_get_channels(state);
+  int inbufofs = Int_val(_inbufofs) * channels;
+  int inbuflen = Int_val(_inbuflen);
+  int outbufofs = Int_val(_outbufofs) * channels;
+  int outbuflen = Int_val(_outbuflen);
+  float *inbuf, *outbuf;
   int i;
 
-  inbuf = malloc(inbuflen * sizeof(float));
-  for (i = 0; i < inbuflen; i++)
+  inbuf = malloc(inbuflen * channels * sizeof(float));
+  for (i = 0; i < inbuflen * channels; i++)
     inbuf[i] = Double_field(_inbuf, inbufofs + i);
-  outbuf = malloc(outbuflen * sizeof(float));
+
+  data.src_ratio = Double_val(_ratio);
+  caml_release_runtime_system();
+
+  outbuf = malloc(outbuflen * channels * sizeof(float));
   data.data_in = inbuf;
   data.input_frames = inbuflen;
   data.data_out = outbuf;
   data.output_frames = outbuflen;
-  data.src_ratio = Double_val(_ratio);
   if (inbuflen == 0)
     data.end_of_input = 1;
   else
     data.end_of_input = 0;
 
-  caml_enter_blocking_section();
   assert(!src_process(state, &data));
-  caml_leave_blocking_section();
+  free(inbuf);
 
-  for (i = 0; i < data.output_frames_gen; i++)
+  caml_acquire_runtime_system();
+
+  for (i = 0; i < data.output_frames_gen * channels; i++)
     Store_double_field(_outbuf, outbufofs + i, outbuf[i]);
+  free(outbuf);
+
   ans = caml_alloc_tuple(2);
   Store_field(ans, 0, Val_int(data.input_frames_used));
   Store_field(ans, 1, Val_int(data.output_frames_gen));
