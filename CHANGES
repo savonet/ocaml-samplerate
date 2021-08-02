@@ -2,6 +2,7 @@
 =====
 
 - Change licence to 2-clause BSD in order to match libsamplerate's licence (#1).
+- Fix various memory leaks due to incorrect handling of channels (#2).
 
 0.1.5 (14-11-2020)
 =====

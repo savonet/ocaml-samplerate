@@ -204,22 +204,23 @@ CAMLprim value ocaml_samplerate_process_alloc(value src, value _ratio,
                                               value _inbuflen) {
   CAMLparam3(src, _ratio, _inbuf);
   CAMLlocal1(ans);
-  int inbufofs = Int_val(_inbufofs);
+  SRC_DATA data;
+  SRC_STATE *state = State_val(src);
+  int channels = src_get_channels(state);
+  int inbufofs = Int_val(_inbufofs) * channels;
   int inbuflen = Int_val(_inbuflen);
   float ratio = Double_val(_ratio);
   int outbuflen = (int)(inbuflen * ratio) + 64;
   int anslen;
   float *inbuf, *outbuf;
-  SRC_DATA data;
-  SRC_STATE *state = State_val(src);
   int i;
 
-  inbuf = malloc(inbuflen * sizeof(float));
+  inbuf = malloc(inbuflen * channels * sizeof(float));
   if (inbuf == NULL)
     caml_raise_out_of_memory();
-  for (i = 0; i < inbuflen; i++)
+  for (i = 0; i < inbuflen * channels; i++)
     inbuf[i] = Double_field(_inbuf, inbufofs + i);
-  outbuf = malloc(outbuflen * sizeof(float));
+  outbuf = malloc(outbuflen * channels * sizeof(float));
   if (outbuf == NULL) {
     free(inbuf);
     caml_raise_out_of_memory();
@@ -243,7 +244,7 @@ CAMLprim value ocaml_samplerate_process_alloc(value src, value _ratio,
     caml_failwith(src_strerror(ret));
   }
 
-  anslen = data.output_frames_gen;
+  anslen = data.output_frames_gen * channels;
   ans = caml_alloc(anslen * Double_wosize, Double_array_tag);
 
   for (i = 0; i < anslen; i++)
