@@ -29,21 +29,21 @@ CAMLprim value ocaml_samplerate_convert(value vconv, value vchans, value vratio,
   int chans = Int_val(vchans);
   float ratio = Double_val(vratio);
   int inbuflen = Int_val(len);
-  float *inbuf = (float *)malloc(sizeof(float) * inbuflen);
+  float *inbuf = (float *)malloc(sizeof(float) * inbuflen * chans);
   int outbuflen = (int)(inbuflen * ratio) + 64;
-  float *outbuf = (float *)malloc(sizeof(float) * outbuflen);
+  float *outbuf = (float *)malloc(sizeof(float) * outbuflen * chans);
   SRC_DATA src_data;
   int i, ret;
   value ans;
   int anslen;
 
-  for (i = 0; i < inbuflen; i++)
+  for (i = 0; i < inbuflen * chans; i++)
     inbuf[i] = Double_field(vinbuf, i + Int_val(inofs));
 
   src_data.data_in = inbuf;
-  src_data.input_frames = inbuflen / chans;
+  src_data.input_frames = inbuflen;
   src_data.data_out = outbuf;
-  src_data.output_frames = outbuflen / chans;
+  src_data.output_frames = outbuflen;
   src_data.src_ratio = ratio;
 
   caml_enter_blocking_section();
