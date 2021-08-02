@@ -110,6 +110,8 @@ CAMLprim value ocaml_samplerate_process(value src, value _ratio, value _inbuf,
   int i;
 
   inbuf = malloc(inbuflen * channels * sizeof(float));
+  if (inbuf == NULL)
+    caml_raise_out_of_memory();
   for (i = 0; i < inbuflen * channels; i++)
     inbuf[i] = Double_field(_inbuf, inbufofs + i);
 
@@ -117,6 +119,12 @@ CAMLprim value ocaml_samplerate_process(value src, value _ratio, value _inbuf,
   caml_release_runtime_system();
 
   outbuf = malloc(outbuflen * channels * sizeof(float));
+  if (outbuf == NULL) {
+    free(inbuf);
+    caml_acquire_runtime_system();
+    caml_raise_out_of_memory();
+  }
+
   data.data_in = inbuf;
   data.input_frames = inbuflen;
   data.data_out = outbuf;
@@ -126,10 +134,17 @@ CAMLprim value ocaml_samplerate_process(value src, value _ratio, value _inbuf,
   else
     data.end_of_input = 0;
 
-  assert(!src_process(state, &data));
+  int ret = src_process(state, &data);
   free(inbuf);
 
   caml_acquire_runtime_system();
+
+  if (ret != 0) {
+    free(outbuf);
+    char msg[256];
+    snprintf(msg, sizeof(msg), "Samplerate.process: %s", src_strerror(ret));
+    caml_failwith(msg);
+  }
 
   for (i = 0; i < data.output_frames_gen * channels; i++)
     Store_double_field(_outbuf, outbufofs + i, outbuf[i]);
