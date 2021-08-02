@@ -3,8 +3,8 @@
 
 - Change licence to 2-clause BSD in order to match libsamplerate's licence (#1).
 - Fix various memory leaks due to incorrect handling of channels (#2). All
-- offsets are sizes should now be in number of _frames_, i.e. number of
-- samples _per channel_.
+  offsets are sizes should now be in number of _frames_, i.e. number of samples
+  _per channel_.
 
 0.1.5 (14-11-2020)
 =====
