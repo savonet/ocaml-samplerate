@@ -11,7 +11,7 @@ jobs:
     - uses: actions/checkout@v4
     - uses: ocaml/setup-ocaml@v2
       with:
-        ocaml-version: ${{ matrix.ocaml-version }}
+        ocaml-compiler: ${{ matrix.ocaml-compiler }}
     - run: opam pin add -n .
     - run: opam depext -yt samplerate
     - run: opam install -t .
