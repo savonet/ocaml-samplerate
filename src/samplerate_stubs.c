@@ -15,6 +15,18 @@
 
 #define Int_conv(c) Int_val(c)
 
+static inline float clip(float s) {
+  if (s != s)
+    return 0;
+
+  if (s < -1) {
+    return -1;
+  } else if (s > 1) {
+    return 1;
+  } else
+    return s;
+}
+
 CAMLprim value ocaml_samplerate_get_conv_name(value conv) {
   return caml_copy_string(src_get_name(Int_conv(conv)));
 }
@@ -60,7 +72,7 @@ CAMLprim value ocaml_samplerate_convert(value vconv, value vchans, value vratio,
   ans = caml_alloc(anslen * Double_wosize, Double_array_tag);
 
   for (i = 0; i < anslen; i++)
-    Store_double_field(ans, i, outbuf[i]);
+    Store_double_field(ans, i, clip(outbuf[i]));
   free(outbuf);
 
   CAMLreturn(ans);
@@ -147,7 +159,7 @@ CAMLprim value ocaml_samplerate_process(value src, value _ratio, value _inbuf,
   }
 
   for (i = 0; i < data.output_frames_gen * channels; i++)
-    Store_double_field(_outbuf, outbufofs + i, outbuf[i]);
+    Store_double_field(_outbuf, outbufofs + i, clip(outbuf[i]));
   free(outbuf);
 
   ans = caml_alloc_tuple(2);
@@ -249,7 +261,7 @@ CAMLprim value ocaml_samplerate_process_alloc(value src, value _ratio,
   ans = caml_alloc(anslen * Double_wosize, Double_array_tag);
 
   for (i = 0; i < anslen; i++)
-    Store_double_field(ans, i, outbuf[i]);
+    Store_double_field(ans, i, clip(outbuf[i]));
   free(outbuf);
 
   CAMLreturn(ans);

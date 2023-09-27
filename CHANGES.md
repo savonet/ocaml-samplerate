@@ -1,3 +1,7 @@
+0.1.7 (unreleased_
+=====
+* Clip returned values, except in big array API.
+
 0.1.6 (02-07-2021)
 =====
 

@@ -1,5 +1,5 @@
 (lang dune 2.8)
-(version 0.1.6)
+(version 0.1.7)
 (name samplerate)
 (source (github savonet/ocaml-samplerate))
 (license BSD-2-Clause)
