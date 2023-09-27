@@ -1,4 +1,4 @@
-(lang dune 2.8)
+(lang dune 3.6)
 (version 0.1.7)
 (name samplerate)
 (source (github savonet/ocaml-samplerate))

@@ -10,7 +10,7 @@ license: "BSD-2-Clause"
 homepage: "https://github.com/savonet/ocaml-samplerate"
 bug-reports: "https://github.com/savonet/ocaml-samplerate/issues"
 depends: [
-  "dune" {>= "2.8"}
+  "dune" {>= "3.6"}
   "dune-configurator" {build}
   "conf-samplerate" {build}
   "conf-pkg-config" {build}
