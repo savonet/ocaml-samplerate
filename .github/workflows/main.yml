@@ -8,8 +8,8 @@ jobs:
         operating-system: [ubuntu-latest, macos-latest]
         ocaml-version: ['4.09.0']
     steps:
-    - uses: actions/checkout@v1
-    - uses: avsm/setup-ocaml@master
+    - uses: actions/checkout@v4
+    - uses: ocaml/setup-ocaml@v2
       with:
         ocaml-version: ${{ matrix.ocaml-version }}
     - run: opam pin add -n .
