@@ -8,7 +8,9 @@ let () =
   let outbuf = Array.make (buflen * 2) 0. in
   let conv = Samplerate.create Samplerate.Conv_linear chans in
   for _ = 1 to 10 do
-    let i, o = Samplerate.process conv 2. inbuf off samples outbuf off (2 * samples) in
+    let i, o =
+      Samplerate.process conv 2. inbuf off samples outbuf off (2 * samples)
+    in
     Printf.printf "process: %d -> %d\n%!" i o
   done;
   print_newline ()

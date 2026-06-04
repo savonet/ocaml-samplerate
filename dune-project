@@ -1,4 +1,4 @@
-(lang dune 3.6)
+(lang dune 3.23)
 (version 0.1.7)
 (name samplerate)
 (source (github savonet/ocaml-samplerate))
@@ -13,9 +13,10 @@
  (name samplerate)
  (synopsis "Samplerate audio conversion library")
  (description "Bindings for the samplerate library which provides functions for changing samplerate of audio data")
+ (allow_empty)
  (depends
+  conf-samplerate
+  conf-pkg-config
   dune
-  (dune-configurator :build)
-  (conf-samplerate :build)
-  (conf-pkg-config :build))
+  dune-configurator)
 )

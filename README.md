@@ -1,21 +1,23 @@
-ocaml-samplerate
-================
+> [!WARNING]
+> This repository is read-only. All changes must be made in
+> [savonet/liquidsoap](https://github.com/savonet/liquidsoap) under
+> `src/modules/synced/samplerate/` and will be mirrored here automatically.
+
+# ocaml-samplerate
 
 This package contains an OCaml interface for the [samplerate
 library](http://libsndfile.github.io/libsamplerate/).
 
 Please read the COPYING file before using this software.
 
-Prerequisites
--------------
+## Prerequisites
 
 - ocaml
 - libsamplerate
 - findlib
 - dune >= 2.0
 
-Compilation
------------
+## Compilation
 
 ```
 $ dune build
@@ -24,8 +26,7 @@ $ dune build
 This should build both the native and the byte-code version of the extension
 library.
 
-Installation
-------------
+## Installation
 
 Via `opam`:
 
@@ -39,14 +40,12 @@ Via `dune` (for developers):
 $ dune install
 ```
 
-Bugs
-----
+## Bugs
 
 Please report any issue in [the dedicated
 bugtracker](https://github.com/savonet/ocaml-samplerate/issues).
 
-Author
-------
+## Author
 
 This author of this software may be contacted by electronic mail at the
 following address: savonet-users@lists.sourceforge.net.
